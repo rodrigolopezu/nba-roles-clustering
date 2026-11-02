@@ -11,7 +11,7 @@ Unsupervised learning project (K-Means + PCA) that clusters NBA players by how t
 | Notebook | Purpose | Status |
 |---|---|---|
 | `01_data_cleaning.ipynb` | Load the raw table, inspect it, fix its problems, save a clean version | Done |
-| `02_feature_engineering.ipynb` | Filter players with too few minutes, choose and scale features | Planned |
+| `02_feature_engineering.ipynb` | Filter players with too few minutes, choose and scale features | Done |
 | `03_clustering.ipynb` | K-Means for several values of k, inertia and silhouette | Planned |
 | `04_pca.ipynb` | Reduce to 2 dimensions to visualize and interpret the groups | Planned |
 | `05_interpretation.ipynb` | Profile each cluster and compare it with the official positions | Planned |
