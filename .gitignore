@@ -3,5 +3,8 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 
-# Data is not redistributed; see README for how to obtain it
-data/
+# Original download; the processed files in data/processed are included
+data/raw/
+
+# Temporary file Tableau creates while a workbook is open
+.~*.twbr

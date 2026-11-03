@@ -1,35 +1,55 @@
-# NBA player roles: do the 5 positions really exist?
+# Do the 5 NBA positions really exist?
 
-Unsupervised learning project (K-Means + PCA) that clusters NBA players by how they play, using per-36-minute statistics, and compares the resulting groups with the official positions (PG, SG, SF, PF, C).
+Unsupervised learning project: cluster NBA players by how they play (K-Means + PCA on per-36-minute stats, 2025-26 season) and check whether the official positions (PG, SG, SF, PF, C) describe those styles.
 
-**Question:** do the 5 traditional positions describe how players actually play, or do they hide more (or fewer) distinct roles?
+**Stack:** Python, pandas, NumPy, scikit-learn, matplotlib, Jupyter, Tableau.
 
-**Stack:** Python, pandas, NumPy, scikit-learn, matplotlib, Jupyter.
+![Dashboard](images/dashboard.png)
 
-## Pipeline
+## Key findings
 
-| Notebook | Purpose | Status |
+- **Positions carry some real information.** Point guards and centers are recognizable: 69% of PGs fall in the "lead ball handlers" group and 66% of Cs in the "rim-protecting bigs" group.
+- **But they are far from a clean split.** Taking the 5 positions as groups, players are on average as close to other positions as to their own (silhouette 0.02).
+- **SG, SF and PF are hard to tell apart.** About half of each (53%, 49%, 48%) land in the same group, "perimeter role players".
+- **Real hybrids exist.** Centers Jokić, Şengün and Adebayo cluster with point guard Dončić among the "high-usage scorers".
+- **Styles look like a spectrum, not five boxes.** A more natural description is three families: perimeter creators, rim-protecting bigs and perimeter role players.
+
+| Measure | Value |
+|---|---|
+| Agreement groups vs positions (adjusted Rand index) | 0.13 to 0.18 |
+| Agreement expected by chance | below 0.02 |
+| K-Means agreement with itself (other seeds) | 0.54 to 1.0 |
+| Silhouette: official positions / K-Means k=3 / k=5 | 0.02 / 0.25 / 0.18 |
+
+## How it was done
+
+| Step | Notebook | What happens |
 |---|---|---|
-| `01_data_cleaning.ipynb` | Load the raw table, inspect it, fix its problems, save a clean version | Done |
-| `02_feature_engineering.ipynb` | Filter players with too few minutes, choose and scale features | Done |
-| `03_clustering.ipynb` | K-Means for several values of k, inertia, silhouette and stability | Done |
-| `04_pca.ipynb` | Reduce to 2 dimensions to visualize and interpret the groups | Done |
-| `05_interpretation.ipynb` | Profile each cluster and compare it with the official positions | Done |
+| 1. Clean | [01_data_cleaning](notebooks/01_data_cleaning.ipynb) | Load the Basketball-Reference per-36 table, fix column names, check duplicates and missing values |
+| 2. Features | [02_feature_engineering](notebooks/02_feature_engineering.ipynb) | Keep players with 700+ minutes and 15+ per game (325 players), choose 9 style features, standardize |
+| 3. Cluster | [03_clustering](notebooks/03_clustering.ipynb) | K-Means for k = 2 to 10; inertia, silhouette and stability across random seeds |
+| 4. Visualize | [04_pca](notebooks/04_pca.ipynb) | PCA to 2 dimensions: PC1 is interior vs perimeter, PC2 is creation vs rim running |
+| 5. Interpret | [05_interpretation](notebooks/05_interpretation.ipynb) | Name the groups, cross them with positions, measure agreement against chance and stability |
+| 6. Share | [tableau/](tableau/) | Interactive dashboard (player map, positions vs groups, group profile, player list) |
+
+## Limitations
+
+- One season and 325 players after filtering by minutes.
+- Only 9 box-score features: nothing about height, defensive assignments or player quality.
+- Weak cluster structure (silhouette at most 0.28); the 5-group solution changes with the random seed. Group names are interpretations.
+
+## Repository
+
+```
+data/raw/          original download (not included)
+data/processed/    cleaned, scaled and clustered tables (CSV)
+notebooks/         the five notebooks above
+tableau/           Tableau workbook
+images/            dashboard screenshot
+```
+
+To reproduce: download the *Per 36 Minutes* table of the season from Basketball-Reference as `data/raw/bbref_per36_2025_26.csv`, install [uv](https://docs.astral.sh/uv/), run `uv sync`, and run the notebooks in order using the `.venv` environment as kernel. The Tableau workbook stores the path of the CSV on the author's computer, so point its data source to `data/processed/tableau_players.csv` when you open it.
 
 ## Data
 
-Season 2025-26, "Per 36 Minutes" table from [Basketball-Reference](https://www.basketball-reference.com/). The data is not included in this repository.
-
-To reproduce:
-1. Open the season's *Per 36 Minutes* page, use *Share & Export* > *Get table as CSV* and save the content as `data/raw/bbref_per36_2025_26.csv`.
-2. Run the notebooks in order.
-
-## Setup
-
-The project uses [uv](https://docs.astral.sh/uv/) to manage the environment.
-
-```bash
-uv sync
-```
-
-Then open the notebooks in VS Code or Jupyter and select the `.venv` environment as the kernel.
+Season 2025-26 "Per 36 Minutes" table from [Basketball-Reference](https://www.basketball-reference.com/). The processed files in `data/processed` are derived from it.
